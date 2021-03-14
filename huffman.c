@@ -44,8 +44,7 @@ tNode *heapDelete( HEAP *heap);
 void heapDestroy( HEAP *heap);
 
 ////////////////////////////////////////////////////////////////////////////////
-// 파일에 속한 각 문자(바이트)의 빈도 저장
-// return value : 파일에서 읽은 바이트 수
+
 int read_chars(FILE* fp, int* ch_freq)
 {
 	int count = 0;
@@ -67,16 +66,12 @@ int read_chars(FILE* fp, int* ch_freq)
 }
 
 
-// 허프만 코드에 대한 메모리 해제
 void free_huffman_code(char* codes[])
 {
 	for (int i = 0; i < 256; i++)
 		free(codes[i]); 
 }
 
-// 새로운 노드를 생성
-// 좌/우 subtree가 NULL이고 문자(data)와 빈도(freq)가 저장됨
-// return value : 노드의 포인터
 tNode* newNode(char data, int freq)
 {
 	tNode* brandnew = malloc(sizeof(tNode));
@@ -90,15 +85,7 @@ tNode* newNode(char data, int freq)
 }
 
 
-// 허프만 트리를 생성
-// 1. capacity 256 짜리 빈(empty) 힙 생성
-// 2. 개별 알파벳에 대한 노드 생성
-// 3. 힙에 삽입 (minheap 구성)
-// 4. 2개의 최소값을 갖는 트리 추출
-// 5. 두 트리를 결합 후 새 노드에 추가
-// 6. 새 트리를 힙에 삽입
-// 7. 힙에 한개의 노드가 남을 때까지 반복
-// return value: 트리의 root 노드의 포인터
+
 tNode* make_huffman_tree(int* ch_freq)
 {
 	// 1. capacity 256짜리 빈 힙 생성
@@ -132,9 +119,7 @@ tNode* make_huffman_tree(int* ch_freq)
 
 }
 
-// 허프만 트리를 순회하며 허프만 코드를 생성하여 codes에 저장
-// leaf 노드에서만 코드를 생성
-// strdup 함수 사용함
+
 void traverse_tree(tNode* root, char* code, int depth, char* codes[]) // 여기 들어온 root는 완성된 허프만 트리!!
 {
 
@@ -163,8 +148,7 @@ void traverse_tree(tNode* root, char* code, int depth, char* codes[]) // 여기 
 	
 }
 
-// 허프만 트리로부터 허프만 코드를 생성
-// traverse_tree 함수 호출
+
 void make_huffman_code(tNode* root, char* codes[])
 {
 	char *code = ""; 
@@ -173,7 +157,7 @@ void make_huffman_code(tNode* root, char* codes[])
 
 }
 
-// 트리 메모리 해제
+
 void destroyTree(tNode* root)
 {
 	if (root->left != NULL)
@@ -187,8 +171,7 @@ void destroyTree(tNode* root)
 }
 
 
-// 텍스트 파일을 허프만 코드를 이용하여 바이너리 파일로 인코딩
-// return value : 인코딩된 파일의 바이트 수
+
 int encoding(char* codes[], FILE* infp, FILE* outfp)
 {
 	int count = 0;
@@ -208,7 +191,7 @@ int encoding(char* codes[], FILE* infp, FILE* outfp)
 
 int encoding_binary( char *codes[], FILE *infp, FILE *outfp);
 
-// 바이너리 파일을 허프만 트리를 이용하여 텍스트 파일로 디코딩
+
 void decoding(tNode* root, FILE* infp, FILE* outfp)
 {
 	
@@ -240,7 +223,7 @@ void decoding(tNode* root, FILE* infp, FILE* outfp)
 void decoding_binary( tNode *root, FILE *infp, FILE *outfp);
 
 ////////////////////////////////////////////////////////////////////////////////
-// 문자별 빈도 출력 (for debugging)
+
 void print_char_freq( int *ch_freq)
 {
 	int i;
@@ -252,8 +235,7 @@ void print_char_freq( int *ch_freq)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 문자별 빈도를 이용하여 허프만 트리와 허프만 코드를 생성
-// return value : 허프만 트리의 root node
+
 tNode *run_huffman( int *ch_freq, char *codes[])
 {
 	
@@ -267,7 +249,7 @@ tNode *run_huffman( int *ch_freq, char *codes[])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 허프만 코드를 화면에 출력
+
 void print_huffman_code( char *codes[])
 {
 	int i;
@@ -279,9 +261,7 @@ void print_huffman_code( char *codes[])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// argv[1] : 입력 텍스트 파일
-// argv[2] : 바이너리 코드 (encoding 결과) 
-// argv[3] : 출력 텍스트 파일 (decoding 결과)
+
 int main( int argc, char **argv)
 {
 	FILE *fp;
@@ -297,7 +277,7 @@ int main( int argc, char **argv)
 	}
 
 	////////////////////////////////////////
-	// 입력 텍스트 파일
+	
 	fp = fopen( argv[1], "rt");
 	if (fp == NULL)
 	{
@@ -305,57 +285,57 @@ int main( int argc, char **argv)
 		return 1;
 	}
 
-	// 텍스트 파일로부터 문자별 빈도 저장
+	
 	int num_bytes = read_chars( fp, ch_freq);
 
 	fclose( fp);
 
-	// 문자별 빈도 출력 (for debugging)
+	
 	print_char_freq( ch_freq);
 	
-	// 허프만 코드/트리 생성
+	
 	huffman_tree = run_huffman( ch_freq, codes);
 	
-	// 허프만 코드 출력 (stdout)
+	
 	print_huffman_code( codes);
 
 	////////////////////////////////////////
-	// 입력: 텍스트 파일
+	
 	infp = fopen( argv[1], "rt");
 	
 #ifdef BINARY_MODE
-	// 출력: 바이너리 코드
+	
 	outfp = fopen( argv[2], "wb");
 #else
-	// 출력: 바이너리 코드
+	
 	outfp = fopen( argv[2], "wt");
 #endif
 
-	// 허프만코드를 이용하여 인코딩(압축)
+	
 #ifdef BINARY_MODE
 	//int encoded_bytes = encoding_binary( codes, infp, outfp);
 #else
 	int encoded_bytes = encoding( codes, infp, outfp);
 #endif
 
-	// 허프만 코드 메모리 해제
+	
 	free_huffman_code( codes);
 	
 	fclose( infp);
 	fclose( outfp);
 
 	////////////////////////////////////////
-	// 입력: 바이너리 코드
+	
 #ifdef BINARY_MODE
 	infp = fopen( argv[2], "rb");
 #else
 	infp = fopen( argv[2], "rt");
 #endif
 
-	// 출력: 텍스트 파일
+	
 	outfp = fopen( argv[3], "wt");
 
-	// 허프만 트리를 이용하여 디코딩
+	
 #ifdef BINARY_MODE
 	//decoding_binary( huffman_tree, infp, outfp);
 #else
@@ -364,7 +344,7 @@ int main( int argc, char **argv)
 
 #endif
 
-	// 허프만 트리 메모리 해제
+	
 	destroyTree( huffman_tree);
 
 	fclose( infp);
@@ -379,7 +359,7 @@ int main( int argc, char **argv)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 힙의 내용 출력 (for debugging)
+
 void heapPrint( HEAP *heap)
 {
 	int i;
@@ -394,8 +374,7 @@ void heapPrint( HEAP *heap)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 힙 생성
-// 배열을 위한 메모리 할당 (capacity)
+
 // last = -1
 HEAP *heapCreate( int capacity)
 {
@@ -417,7 +396,7 @@ HEAP *heapCreate( int capacity)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 최소힙 유지
+
 static void _reheapUp( HEAP *heap, int index)
 {
 	tNode **arr = heap->heapArr;
@@ -442,8 +421,7 @@ static void _reheapUp( HEAP *heap, int index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 힙에 원소 삽입
-// _reheapUp 함수 호출
+
 int heapInsert( HEAP *heap, tNode *data)
 {
 	if (heap->last == heap->capacity - 1)
@@ -458,7 +436,7 @@ int heapInsert( HEAP *heap, tNode *data)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 최소힙 유지
+
 static void _reheapDown( HEAP *heap, int index)
 {
 	tNode **arr = heap->heapArr;
@@ -493,8 +471,7 @@ static void _reheapDown( HEAP *heap, int index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 최소값 제거
-// _reheapDown 함수 호출
+
 tNode *heapDelete( HEAP *heap)
 {
 	if (heap->last == -1) return NULL; // empty heap
@@ -510,7 +487,7 @@ tNode *heapDelete( HEAP *heap)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// 힙 메모리 해제
+
 void heapDestroy( HEAP *heap)
 {
 	free(heap->heapArr);
